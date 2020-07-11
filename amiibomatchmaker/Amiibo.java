@@ -6,15 +6,24 @@ public class Amiibo implements Comparable<Amiibo> {
     private final String character;
     private int matchesNumber, totalWins, totalLosses;
     private final int ID;
+    private int[] numberOfMatchesAgainstAmiibo;
     private double winRate;
     
-    // Constructor
+    // Constructors
     public Amiibo(String n, String c, int w, int l) {
         name = new String(n);
         character = new String(c);
         matchesNumber = w + l;
         totalWins = w;
         totalLosses = l;
+        winRate = calculateWinRate();
+        ID = generateID(name);
+    }
+    
+    
+    public Amiibo(String n, String c) {
+        name = new String(n);
+        character = new String(c);
         winRate = calculateWinRate();
         ID = generateID(name);
     }
@@ -30,12 +39,29 @@ public class Amiibo implements Comparable<Amiibo> {
         ID = generateID(name);
     }
     
-    public String getName() {
-        return name;
-    }
+    // Getters
+    public String getName() { return name; }
+    public String getCharacter() { return character; }
+    public int getMatchesNumber() { return matchesNumber; }
+    public int getTotalWins() { return totalWins; }
+    public int getTotalLosses() { return totalLosses; }
+    public int getID() { return ID; }
+    public int[] getNumberOfMatchesAgainstAmiibo() { return numberOfMatchesAgainstAmiibo; }
+    public double getWinRate() { return winRate; }
     
-    public int getID() {
-        return ID;
+    // Setters
+    public void setName(String s) { name = new String(s); }
+    public void setMatchesTotal(int n) { matchesNumber = n; }
+    public void setTotalWins(int n) { totalWins = n; }
+    public void setTotalLosses(int n) { totalLosses = n; }
+    public void setNumberOfMatchesAgainstAmiibo(int[] arr) { numberOfMatchesAgainstAmiibo = arr; }
+    public void setWinRate() { winRate = calculateWinRate(); }
+    
+    public void incrementWins() {
+        totalWins++;
+    }
+    public void incrementLosses() {
+        totalLosses++;
     }
     
     private int generateID(String s) {
@@ -91,7 +117,11 @@ public class Amiibo implements Comparable<Amiibo> {
         return id;
     }
     
-    private double calculateWinRate() {
+    public void calculateMatchesNumber() {
+        matchesNumber = totalLosses + totalWins;
+    }
+    
+    public double calculateWinRate() {
         
         /*
         winRate is doing (10000 * totalWins / matchesNumber) / 100 instead of
