@@ -21,7 +21,9 @@ public class AmiiboMatchMaker {
         
         // For loop loads previous match data into each Amiibo.
         for (int i = 0; i < arr.size(); i++) {
-            arr.get(i).setNumberOfMatchesAgainstAmiibo(loadPastMatches(arr.get(i)));
+            Amiibo a = arr.get(i);
+            a.setNumberOfMatchesAgainstAmiibo(loadPastMatches(a));
+            a.setMatchesTotal(a.getNumberOfMatchesAgainstAmiiboSum());
         }
         
         while (true) {
@@ -42,16 +44,6 @@ public class AmiiboMatchMaker {
         
         scan.close();
         System.out.println("\n\nThank you for using Amiibo Match Maker!");
-        
-        
-        /*Collections.sort(arr);
-        printAllAmiibosData(arr);
-        ArrayList<Amiibo> sorted = init();
-        Collections.sort(sorted);
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        printAllAmiibosData(sorted);*/
-        
-        
     }
     
     public static ArrayList<Amiibo> init() {
@@ -68,7 +60,8 @@ public class AmiiboMatchMaker {
                             new Amiibo("PapíMars", "Mario"),
                             new Amiibo("Legolas", "Toon Link"),
                             new Amiibo("Lt. Pigeon", "Captain Falcon"),
-                            new Amiibo("Wawa Melon", "Yoshi")};
+                            new Amiibo("Wawa Melon", "Yoshi"),
+                            new Amiibo("Daddy", "Snake")};
         ArrayList<Amiibo> temp = new ArrayList<Amiibo>();
         for (Amiibo amiibo : amiibos) {
             temp.add(new Amiibo(amiibo));
@@ -90,20 +83,21 @@ public class AmiiboMatchMaker {
         NULL String values are converted into -1.
         */
         
-        String dataRaw = "NULL	0	0	0	0	3	0	0	1	0	1	0	0	1\n" +
-                        "0	NULL	0	0	1	0	0	0	0	0	0	1	0	0\n" +
-                        "1	0	NULL	0	0	0	1	0	0	1	1	0	1	1\n" +
-                        "1	0	0	NULL	0	0	0	0	1	0	0	1	1	1\n" +
-                        "0	0	0	0	NULL	0	0	0	0	0	1	0	0	0\n" +
-                        "0	1	0	0	0	NULL	0	0	0	0	1	0	0	0\n" +
-                        "0	0	0	0	0	0	NULL	1	1	0	1	0	0	0\n" +
-                        "0	0	0	0	1	0	0	NULL	1	0	2	0	1	1\n" +
-                        "0	0	0	0	0	0	0	0	NULL	0	0	0	1	0\n" +
-                        "0	0	1	0	1	0	0	0	0	NULL	2	0	0	1\n" +
-                        "0	1	0	1	1	0	1	0	1	0	NULL	1	1	0\n" +
-                        "0	0	0	0	0	0	0	0	0	0	1	NULL	0	0\n" +
-                        "1	3	1	0	3	1	1	0	1	2	2	1	NULL	2\n" +
-                        "0	1	1	0	1	2	1	1	1	0	1	1	0	NULL";
+        String dataRaw = "NULL	0	0	0	0	3	0	0	1	0	1	0	0	1	1\n" +
+                        "0	NULL	0	0	1	0	0	0	0	0	0	1	0	0	1\n" +
+                        "1	0	NULL	0	0	0	1	0	0	1	1	0	1	1	1\n" +
+                        "1	0	0	NULL	0	0	0	0	1	0	0	1	1	1	1\n" +
+                        "0	0	0	0	NULL	0	0	0	0	0	1	0	0	0	0\n" +
+                        "0	1	0	0	0	NULL	0	0	0	0	1	0	0	0	0\n" +
+                        "0	0	0	0	0	0	NULL	1	1	0	1	0	0	0	1\n" +
+                        "0	0	0	0	1	0	0	NULL	1	0	2	0	1	1	1\n" +
+                        "0	0	0	0	0	0	0	0	NULL	0	0	0	1	0	0\n" +
+                        "1	0	1	0	1	0	0	0	0	NULL	2	0	0	1	0\n" +
+                        "0	1	0	1	1	0	1	0	1	0	NULL	1	1	0	1\n" +
+                        "0	0	0	0	0	0	0	0	0	0	1	NULL	0	0	1\n" +
+                        "1	3	1	0	3	1	1	0	1	2	2	1	NULL	2	1\n" +
+                        "0	1	1	0	1	2	1	1	1	0	1	1	0	NULL	1\n" +
+                        "0	0	0	0	1	1	0	0	1	1	0	0	0	0	NULL";
         
         //dataRaw = dataRaw.replaceAll("[\\s]", " ");
         String[] rows = dataRaw.split("\n");
@@ -125,21 +119,14 @@ public class AmiiboMatchMaker {
     public static int[] loadPastMatches(Amiibo amiibo) {
         
         int[] retVal = new int[arr.size()];
+        final int ID = amiibo.getID();
         
-        for (int i = 0; i < arr.size(); i++) {
-            for (int j = 0; j < arr.size(); j++) {
-                if (amiibo.getID() != i) {
-                    retVal[i] += (spreadsheetData[i][j] != -1 ? spreadsheetData[i][j] : 0);
-                } else {
-                    retVal[i] = -1;
-                }
-            }
-            for (int j = 0; j < arr.size(); j++) {
-                if (amiibo.getID() != i) {
-                    retVal[i] += (spreadsheetData[j][i] != -1 ? spreadsheetData[j][i] : 0);
-                } else {
-                    retVal[i] = -1;
-                }
+        for (int j = 0; j < arr.size(); j++) {
+            if (ID == j) {
+                retVal[j] = -1;
+            } else {
+                retVal[j] += (spreadsheetData[ID][j] != -1 ? spreadsheetData[ID][j] : 0);
+                retVal[j] += (spreadsheetData[j][ID] != -1 ? spreadsheetData[j][ID] : 0);
             }
         }
         
@@ -199,6 +186,7 @@ public class AmiiboMatchMaker {
         */
         
         double retVal = 0.5;
+        int matchesNumber = arr.get(ID).getMatchesNumber();
         
         /*
         If the Amiibo's matchNumber is doubly larger or smaller than average,
@@ -206,11 +194,11 @@ public class AmiiboMatchMaker {
         retVal at 0.5.
         */
         
-        if (arr.get(ID).getMatchesNumber() > average) {
-            if (arr.get(ID).getMatchesNumber() / 2 > average)
+        if (matchesNumber > average) {
+            if (matchesNumber / 2 > average)
                 retVal /= 2.0;
         } else {
-            if (arr.get(ID).getMatchesNumber() * 2 <= average)
+            if (matchesNumber * 2 <= average)
                 retVal *= 1.5;
         }
         
@@ -224,7 +212,7 @@ public class AmiiboMatchMaker {
         // Makes sure retVal stays between 0.0 and 1.0.
         if (retVal > 1.0)
             retVal = 1.0;
-        if (retVal < 0.0)
+        else if (retVal < 0.0)
             retVal = 0.0;
         
         return (int) Math.ceil(retVal * 100);
@@ -259,7 +247,7 @@ public class AmiiboMatchMaker {
         }
         average /= previousMatches.length;
         
-        int freq = arr.get(ID).getNumberOfMatchesAgainstAmiibo()[ID];
+        int freq = arr.get(fighter1.getID()).getNumberOfMatchesAgainstAmiibo()[ID];
         if (freq > average) {
             if (freq / 2 > average)
                 retVal /= 2.0;
@@ -294,40 +282,48 @@ public class AmiiboMatchMaker {
         true, gets that Amiibo's name from arr, and sets fighter1 to that name.
         */
         
-        Amiibo retVal = new Amiibo(arr.get(0));
+        Amiibo retVal = arr.get(0);
         int decision, originalSum, sum = 0;
         
         for (int i = 0; i < n; i++) {
             sum += chances[i];
         }
         originalSum = sum;
-        decision = rand.nextInt(sum);
+        
+        try {
+            // Try block runs if sum > 0
+            decision = rand.nextInt(sum);
 
-        if (originalSum - (originalSum - chances[chances.length - 1]) >= decision) {
-            retVal = arr.get(chances.length - 1);
-            return retVal;
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (sum <= decision) {
-                if (i == 0) {
-                    retVal = arr.get(i);
-                    break;
-                } else {
-                    retVal = arr.get(i - 1);
-                    break;
-                }
-            } else {
-                sum -= chances[i];
+            if (originalSum - (originalSum - chances[chances.length - 1]) >= decision) {
+                retVal = arr.get(chances.length - 1);
+                return retVal;
             }
+
+            for (int i = 0; i < n; i++) {
+                if (sum <= decision) {
+                    if (i == 0) {
+                        retVal = arr.get(i);
+                        break;
+                    } else {
+                        retVal = arr.get(i - 1);
+                        break;
+                    }
+                } else {
+                    sum -= chances[i];
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            // Catch block only runs if sum = 0
+            retVal = arr.get(rand.nextInt(arr.size() - 1));
         }
+        
         
         return retVal;
     }
     
     public static Amiibo generateSecondFighter(Amiibo firstFighter, int n, int[] chances, Random rand) {
         
-        Amiibo retVal = new Amiibo(arr.get(0));
+        Amiibo retVal = arr.get(0);
         int decision, originalSum, sum = 0;
         
         for (int i = 0; i < n; i++) {

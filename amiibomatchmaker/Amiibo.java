@@ -35,6 +35,7 @@ public class Amiibo implements Comparable<Amiibo> {
         totalWins = a.totalWins;
         totalLosses = a.totalLosses;
         matchesNumber = totalWins + totalLosses;
+        numberOfMatchesAgainstAmiibo = a.getNumberOfMatchesAgainstAmiibo();
         winRate = calculateWinRate();
         ID = generateID(name);
     }
@@ -47,6 +48,14 @@ public class Amiibo implements Comparable<Amiibo> {
     public int getTotalLosses() { return totalLosses; }
     public int getID() { return ID; }
     public int[] getNumberOfMatchesAgainstAmiibo() { return numberOfMatchesAgainstAmiibo; }
+    public int getNumberOfMatchesAgainstAmiiboSum() {
+        int sum = 0;
+        for (int i = 0; i < getNumberOfMatchesAgainstAmiibo().length; i++) {
+            sum += getNumberOfMatchesAgainstAmiibo()[i];
+        }
+        // Return sum + 1 to make up for the -1 in the data which represents itself.
+        return sum + 1;
+    }
     public double getWinRate() { return winRate; }
     
     // Setters
@@ -56,13 +65,6 @@ public class Amiibo implements Comparable<Amiibo> {
     public void setTotalLosses(int n) { totalLosses = n; }
     public void setNumberOfMatchesAgainstAmiibo(int[] arr) { numberOfMatchesAgainstAmiibo = arr; }
     public void setWinRate() { winRate = calculateWinRate(); }
-    
-    public void incrementWins() {
-        totalWins++;
-    }
-    public void incrementLosses() {
-        totalLosses++;
-    }
     
     private int generateID(String s) {
         int id = -1;
@@ -108,6 +110,9 @@ public class Amiibo implements Comparable<Amiibo> {
                 break;
             case "Wawa Melon":
                 id = 13;
+                break;
+            case "Daddy":
+                id = 14;
                 break;
             default:
                 id = -1;
