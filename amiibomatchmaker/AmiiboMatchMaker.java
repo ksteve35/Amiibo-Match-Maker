@@ -2,6 +2,7 @@ package amiibomatchmaker;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -27,6 +28,7 @@ public class AmiiboMatchMaker {
         }
         
         while (true) {
+            String failure = "\nError. Please make sure you only input a number.";
             try {
                 clearCMD();
                 System.out.print("Welcome to the Amiibo Match Maker!\n\nHow many matches would you like to generate?\n\n");
@@ -35,10 +37,14 @@ public class AmiiboMatchMaker {
                     generateMatch(howManyMatchesToGenerate);
                     break;
                 } else {
-                    throw new Exception("Number of matches to generate was less than one (1).");
+                    failure = "\nError: Number of matches to generate was less than one (1). Please make sure you only input a positive integer.";
+                    throw new Exception();
                 }
+            } catch (InputMismatchException e) {
+                scan.next();
+                System.out.println(failure);
             } catch (Exception e) {
-                System.out.println("\nError. Please make sure you only input a number.");
+                System.out.println(failure);
             }
         }
         
@@ -79,7 +85,7 @@ public class AmiiboMatchMaker {
         
         /*
         This method takes a simple copy-and-paste from the monthly Google
-        Spreadsheet to import each of the amiibo'dataRaw matchup dataRaw.
+        Spreadsheet to import each of the amiibo's matchup data into dataRaw.
         NULL String values are converted into -1.
         */
         
@@ -99,7 +105,6 @@ public class AmiiboMatchMaker {
                         "0	1	1	0	1	2	1	1	1	0	1	1	0	NULL	1\n" +
                         "0	0	0	0	1	1	0	0	1	1	0	0	0	0	NULL";
         
-        //dataRaw = dataRaw.replaceAll("[\\s]", " ");
         String[] rows = dataRaw.split("\n");
         int[][] data = new int[arr.size()][arr.size()];
         

@@ -50,8 +50,8 @@ public class Amiibo implements Comparable<Amiibo> {
     public int[] getNumberOfMatchesAgainstAmiibo() { return numberOfMatchesAgainstAmiibo; }
     public int getNumberOfMatchesAgainstAmiiboSum() {
         int sum = 0;
-        for (int i = 0; i < getNumberOfMatchesAgainstAmiibo().length; i++) {
-            sum += getNumberOfMatchesAgainstAmiibo()[i];
+        for (int i = 0; i < numberOfMatchesAgainstAmiibo.length; i++) {
+            sum += numberOfMatchesAgainstAmiibo[i];
         }
         // Return sum + 1 to make up for the -1 in the data which represents itself.
         return sum + 1;
