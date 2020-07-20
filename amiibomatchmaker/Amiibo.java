@@ -16,7 +16,7 @@ public class Amiibo implements Comparable<Amiibo> {
         matchesNumber = w + l;
         totalWins = w;
         totalLosses = l;
-        winRate = calculateWinRate();
+        calculateWinRate();
         ID = generateID(name);
     }
     
@@ -24,7 +24,7 @@ public class Amiibo implements Comparable<Amiibo> {
     public Amiibo(String n, String c) {
         name = new String(n);
         character = new String(c);
-        winRate = calculateWinRate();
+        calculateWinRate();
         ID = generateID(name);
     }
     
@@ -36,7 +36,7 @@ public class Amiibo implements Comparable<Amiibo> {
         totalLosses = a.totalLosses;
         matchesNumber = totalWins + totalLosses;
         numberOfMatchesAgainstAmiibo = a.getNumberOfMatchesAgainstAmiibo();
-        winRate = calculateWinRate();
+        calculateWinRate();
         ID = generateID(name);
     }
     
@@ -64,7 +64,6 @@ public class Amiibo implements Comparable<Amiibo> {
     public void setTotalWins(int n) { totalWins = n; }
     public void setTotalLosses(int n) { totalLosses = n; }
     public void setNumberOfMatchesAgainstAmiibo(int[] arr) { numberOfMatchesAgainstAmiibo = arr; }
-    public void setWinRate() { winRate = calculateWinRate(); }
     
     private int generateID(String s) {
         int id = -1;
@@ -122,20 +121,18 @@ public class Amiibo implements Comparable<Amiibo> {
         return id;
     }
     
-    public void calculateMatchesNumber() {
-        matchesNumber = totalLosses + totalWins;
-    }
+    public void calculateMatchesNumber() { matchesNumber = totalLosses + totalWins; }
     
-    public double calculateWinRate() {
+    public void calculateWinRate() {
         
         /*
-        winRate is doing (10000 * totalWins / matchesNumber) / 100 instead of
+        calculateWinRate is doing (10000 * totalWins / matchesNumber) / 100 instead of
         (100 * totalWins / matchesNumber) because Math.floor changes the data otherwise.
         For example, if totalWins = 21 and matchesNumber = 26, the original method would
         make winRate = 80.0%, while this new version makes it correct at 80.76%.
         */
         
-        return Math.floor(10000 * (double) totalWins / (double) matchesNumber) / 100;
+        winRate = Math.floor(10000 * (double) totalWins / (double) matchesNumber) / 100;
     }
 
     @Override

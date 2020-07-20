@@ -25,12 +25,16 @@ public class AmiiboMatchMaker {
             Amiibo a = arr.get(i);
             a.setNumberOfMatchesAgainstAmiibo(loadPastMatches(a));
             a.setMatchesTotal(a.getNumberOfMatchesAgainstAmiiboSum());
+            a.setTotalWins(loadPastWinsOrLosses(a, true));
+            a.setTotalLosses(loadPastWinsOrLosses(a, false));
+            a.calculateWinRate();
         }
         
         while (true) {
             String failure = "\nError. Please make sure you only input a number.";
             try {
                 clearCMD();
+                printAllAmiibosData(arr);
                 System.out.print("Welcome to the Amiibo Match Maker!\n\nHow many matches would you like to generate?\n\n");
                 int howManyMatchesToGenerate = scan.nextInt();
                 if (howManyMatchesToGenerate > 0) {
@@ -136,6 +140,40 @@ public class AmiiboMatchMaker {
         }
         
         return retVal;
+    }
+    
+    public static int loadPastWinsOrLosses(Amiibo amiibo, boolean b) {
+        
+        /*
+        This method takes an Amiibo as a parameter and a boolean
+        variable where true means to load past wins and false means
+        to load past losses.
+        */
+        
+        int retVal = 0, ID = amiibo.getID(), IDIndex, iIndex;
+        
+        
+        
+        for (int i = 0; i < arr.size(); i++) {
+            
+            /*
+            Calculate past wins if b == true and calculate past losses
+            if b == false by using two temporary integer variables to swap
+            the ordering of the indicies.
+            */
+            
+            if (b) {
+                IDIndex = ID;
+                iIndex = i;
+            } else {
+                IDIndex = i;
+                iIndex = ID;
+            }
+            retVal += spreadsheetData[IDIndex][iIndex];
+        }
+        
+        // Return retVal + 1 to make up for each Amiibo's -1 value from the spreadsheet.
+        return retVal + 1;
     }
 
     public static void generateMatch(int n) {
