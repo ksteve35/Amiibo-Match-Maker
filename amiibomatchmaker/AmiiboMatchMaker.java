@@ -34,7 +34,7 @@ public class AmiiboMatchMaker {
             String failure = "\nError. Please make sure you only input a number.";
             try {
                 clearCMD();
-                printAllAmiibosData(arr);
+                //printAllAmiibosData(arr);
                 System.out.print("Welcome to the Amiibo Match Maker!\n\nHow many matches would you like to generate?\n\n");
                 int howManyMatchesToGenerate = scan.nextInt();
                 if (howManyMatchesToGenerate > 0) {
@@ -152,8 +152,6 @@ public class AmiiboMatchMaker {
         
         int retVal = 0, ID = amiibo.getID(), IDIndex, iIndex;
         
-        
-        
         for (int i = 0; i < arr.size(); i++) {
             
             /*
@@ -212,6 +210,11 @@ public class AmiiboMatchMaker {
             }
             
             fighter2 = generateSecondFighter(fighter1, arr.size(), chances, rand);
+            
+            // Add a match to each fighter to change future matchup chances
+            fighter1.setMatchesTotal(fighter1.getMatchesNumber() + 1);
+            fighter2.setMatchesTotal(fighter2.getMatchesNumber() + 1);
+            
             System.out.println(fighter1.getName() + " vs " + fighter2.getName() + "\n");
         
         }
@@ -225,7 +228,7 @@ public class AmiiboMatchMaker {
         0 = Papa Smurf, 1 = Hubris, 2 = PhDeezNuts, 3 = Red-Gojira,
         4 = Capitalism, 5 = El Diablo, 6 = B∞ty, 7 = 2Fit2Quit,
         8 = Nurse Puff, 9 = Hank Pym, 10 = PapíMars, 11 = Legolas,
-        12 = Lt. Pigeon, 13 = Wawa Melon
+        12 = Lt. Pigeon, 13 = Wawa Melon, 14 = Daddy
         */
         
         double retVal = 0.5;
@@ -268,7 +271,7 @@ public class AmiiboMatchMaker {
         0 = Papa Smurf, 1 = Hubris, 2 = PhDeezNuts, 3 = Red-Gojira,
         4 = Capitalism, 5 = El Diablo, 6 = B∞ty, 7 = 2Fit2Quit,
         8 = Nurse Puff, 9 = Hank Pym, 10 = PapíMars, 11 = Legolas,
-        12 = Lt. Pigeon, 13 = Wawa Melon
+        12 = Lt. Pigeon, 13 = Wawa Melon, 14 = Daddy
         */
         
         int[] previousMatches = fighter1.getNumberOfMatchesAgainstAmiibo();
@@ -290,7 +293,7 @@ public class AmiiboMatchMaker {
         }
         average /= previousMatches.length;
         
-        int freq = arr.get(fighter1.getID()).getNumberOfMatchesAgainstAmiibo()[ID];
+        int freq = fighter1.getNumberOfMatchesAgainstAmiibo()[ID];
         if (freq > average) {
             if (freq / 2 > average)
                 retVal /= 2.0;
@@ -373,24 +376,37 @@ public class AmiiboMatchMaker {
             sum += chances[i];
         }
         originalSum = sum;
-        decision = rand.nextInt(sum);
+        
+        try {
+            // Try block runs if sum > 0
+            decision = rand.nextInt(sum);
 
-        if (originalSum - (originalSum - chances[chances.length - 1]) >= decision) {
-            retVal = arr.get(chances.length - 1);
-            return retVal;
-        }
+            if (originalSum - (originalSum - chances[chances.length - 1]) >= decision) {
+                retVal = arr.get(chances.length - 1);
+                return retVal;
+            }
 
-        for (int i = 0; i < n; i++) {
-            if (sum <= decision) {
-                if (i == 0) {
-                    retVal = arr.get(i);
-                    break;
+            for (int i = 0; i < n; i++) {
+                if (sum <= decision) {
+                    if (i == 0) {
+                        retVal = arr.get(i);
+                        break;
+                    } else {
+                        retVal = arr.get(i - 1);
+                        break;
+                    }
                 } else {
-                    retVal = arr.get(i - 1);
-                    break;
+                    sum -= chances[i];
                 }
-            } else {
-                sum -= chances[i];
+            }
+        
+        } catch (IllegalArgumentException e) {
+            // Catch block only runs if sum = 0
+            retVal = arr.get(rand.nextInt(arr.size() - 1));
+            while (retVal.equals(firstFighter)) {
+                // If the random fighter is the same Amiibo as the first
+                // fighter, redraw a new second fighter.
+                retVal = arr.get(rand.nextInt(arr.size() - 1));
             }
         }
         
